@@ -143,7 +143,7 @@ void calibracion_umbrales(int num_lecturas = 5) {
   umbral_calibrado_s3 = (umbral_minimo_s3 + umbral_maximo_s3) / 2;
 
   animacion_confirmacion();
-  Serial.println("✅ Calibración completada");
+  Serial.println("Calibración completada");
   Serial.println("--------------------------------------");
   Serial.printf("S0: %d | S1: %d | S2: %d | S3: %d\n", umbral_calibrado_s0, umbral_calibrado_s1, umbral_calibrado_s2, umbral_calibrado_s3);
   Serial.println("--------------------------------------");
