@@ -1,176 +1,173 @@
-// === PINES ===
-const int boton = 21;
-const int led_amarillo = 23;
-const int led_verde = 22;
+int led_naranga = 2; //Sensor 1
+int led_azul = 3;    //Sensor 2
+int led_blanco = 5;  //Sensor 3
+int led_verde = 4;    //Sensor 4
+int umbral_manual = A0; //Potenciometro
 
-// Pines de sensores
-const int s0 = 36;
-const int s1 = 35;
-const int s2 = 32;
-const int s3 = 33;
+//Entrada de sensores
+int s0 = A1;
+int s1 = A2;
+int s2 = A3;
+int s3 = A4;
 
-// === VARIABLES DE UMBRALES ===
-int umbral_negro_s0, umbral_negro_s1, umbral_negro_s2, umbral_negro_s3; 
-int umbral_blanco_s0, umbral_blanco_s1, umbral_blanco_s2, umbral_blanco_s3; 
-int umbral_calibrado_s0, umbral_calibrado_s1, umbral_calibrado_s2, umbral_calibrado_s3; 
+int valor_potenciomentro = 0;
+int valor_s0 = 0;
+int valor_s1 = 0;
+int valor_s2 = 0;
+int valor_s3 = 0;
 
-int umbral_minimo_s0 = 1000;
-int umbral_minimo_s1 = 1000;
-int umbral_minimo_s2 = 1000;
-int umbral_minimo_s3 = 1000;
+int S0 = 0;
+int S1 = 0;
+int S2 = 0;
+int S3 = 0;
 
-int umbral_maximo_s0 = 0;
-int umbral_maximo_s1 = 0;
-int umbral_maximo_s2 = 0;
-int umbral_maximo_s3 = 0;
+int velocidad = 200;
+int umbral = 100;
 
-// === Animacion ===
-void animacion_confirmacion() {
-  for (int i = 0; i < 2; i++) {
-    digitalWrite(led_verde, LOW);
-    digitalWrite(led_amarillo, LOW);
-    delay(500);
-    digitalWrite(led_verde, HIGH);
-    digitalWrite(led_amarillo, HIGH);
-    delay(500);
-    digitalWrite(led_verde, LOW);
-    digitalWrite(led_amarillo, LOW);
-  }
+//motor 1
+const int IN1 = 12;
+const int IN2 = 11;
+
+//motor 2
+const int IN3 = 10;
+const int IN4 = 9;
+
+
+/*Funciones*/
+/******************/
+void adelante(){
+  digitalWrite(led_naranga , LOW);
+  digitalWrite(led_azul , LOW);
+  digitalWrite(led_blanco , LOW);
+  digitalWrite(led_verde , LOW);       
+  
+  analogWrite(IN1, 0);
+  analogWrite(IN2, velocidad + 10);
+  analogWrite(IN3, velocidad + 10);
+  analogWrite(IN4, 0);
 }
 
-void esperando_confirmacion_lectura() {
-  digitalWrite(led_amarillo, LOW);
-  digitalWrite(led_verde, HIGH);
-  
-  //Esperando el boton.
-  while (digitalRead(boton) == HIGH) {}  
-  
-  digitalWrite(led_amarillo, HIGH);
+void derecha(){
+  digitalWrite(led_azul,HIGH);
+  digitalWrite(led_blanco, LOW);
   digitalWrite(led_verde, LOW);
-}
+  digitalWrite(led_naranga , LOW);   
 
-// === LECTURA PROMEDIO DE SENSORES ===
-void lectura_sensores(int muestras = 500, 
-                      int *umbral_s0 = nullptr, 
-                      int *umbral_s1 = nullptr, 
-                      int *umbral_s2 = nullptr, 
-                      int *umbral_s3 = nullptr) {
+  analogWrite(IN1, velocidad / 2);
+  analogWrite(IN2, 0);
+  analogWrite(IN3, velocidad);
+  analogWrite(IN4, 0);
   
-  int min_s0 = 4095, max_s0 = 0;
-  int min_s1 = 4095, max_s1 = 0;
-  int min_s2 = 4095, max_s2 = 0;
-  int min_s3 = 4095, max_s3 = 0;
-
-  for (int i = 0; i < muestras; i++) {
-    int val_s0 = analogRead(s0);
-    int val_s1 = analogRead(s1);
-    int val_s2 = analogRead(s2);
-    int val_s3 = analogRead(s3);
-
-    if (val_s0 < min_s0) min_s0 = val_s0;
-    if (val_s0 > max_s0) max_s0 = val_s0;
-    if (val_s1 < min_s1) min_s1 = val_s1;
-    if (val_s1 > max_s1) max_s1 = val_s1;
-    if (val_s2 < min_s2) min_s2 = val_s2;
-    if (val_s2 > max_s2) max_s2 = val_s2;
-    if (val_s3 < min_s3) min_s3 = val_s3;
-    if (val_s3 > max_s3) max_s3 = val_s3;
-
-    delay(5); // Estabilidad
-  }
-
-  if (umbral_s0) *umbral_s0 = (min_s0 + max_s0) / 2;
-  if (umbral_s1) *umbral_s1 = (min_s1 + max_s1) / 2;
-  if (umbral_s2) *umbral_s2 = (min_s2 + max_s2) / 2;
-  if (umbral_s3) *umbral_s3 = (min_s3 + max_s3) / 2;
 }
 
-// === CALIBRACION ===
-void umbrar_negro() {
-  lectura_sensores(500, &umbral_negro_s0, &umbral_negro_s1, &umbral_negro_s2, &umbral_negro_s3);
+void derecha_pronunciada(){
+  digitalWrite(led_naranga , HIGH);
+  digitalWrite(led_azul , HIGH);
+  digitalWrite(led_blanco, LOW);
+  digitalWrite(led_verde, LOW);
+  
+  // Motor izquierdo (A)
+  analogWrite(IN1, 0);  // reversa
+  analogWrite(IN2, velocidad);
+
+  // Motor derecho (B)
+  analogWrite(IN3, velocidad);
+  analogWrite(IN4, 0);  // adelante
 }
 
-void umbrar_blanco() {
-  lectura_sensores(500, &umbral_blanco_s0, &umbral_blanco_s1, &umbral_blanco_s2, &umbral_blanco_s3);
-}
-
-void calcular_umbral_calibrado() {
-  umbral_calibrado_s0 = (umbral_blanco_s0 + umbral_negro_s0) / 2; 
-  umbral_calibrado_s1 = (umbral_blanco_s1 + umbral_negro_s1) / 2; 
-  umbral_calibrado_s2 = (umbral_blanco_s2 + umbral_negro_s2) / 2; 
-  umbral_calibrado_s3 = (umbral_blanco_s3 + umbral_negro_s3) / 2;
-}
-
-// Calibracion general con promedio
-void calibracion_umbrales(int num_lecturas = 5) {
-  for (int i = 0; i < num_lecturas; i++) {
-    // Negro
-    esperando_confirmacion_lectura();
-    Serial.println("Lectura de la linea");
-    umbrar_negro();
+void izquierda(){
+  digitalWrite(led_blanco , HIGH);
+  digitalWrite(led_verde, LOW);
+  digitalWrite(led_naranga , LOW);
+  digitalWrite(led_azul , LOW);     
     
-    delay(1000);
-    animacion_confirmacion();
-    
-    // Blanco
-    esperando_confirmacion_lectura();
-    Serial.println("Lectura del blanco");
-    umbrar_blanco();
-    delay(1000);
-    animacion_confirmacion();
-    Serial.println("Calculando umbral");
-    // Calcula umbral
-    calcular_umbral_calibrado();
-    
-    // Actualiza maximos y minimos
-    if (umbral_calibrado_s0 > umbral_maximo_s0) umbral_maximo_s0 = umbral_calibrado_s0;
-    if (umbral_calibrado_s0 < umbral_minimo_s0) umbral_minimo_s0 = umbral_calibrado_s0;
-
-    if (umbral_calibrado_s1 > umbral_maximo_s1) umbral_maximo_s1 = umbral_calibrado_s1;
-    if (umbral_calibrado_s1 < umbral_minimo_s1) umbral_minimo_s1 = umbral_calibrado_s1;
-
-    if (umbral_calibrado_s2 > umbral_maximo_s2) umbral_maximo_s2 = umbral_calibrado_s2;
-    if (umbral_calibrado_s2 < umbral_minimo_s2) umbral_minimo_s2 = umbral_calibrado_s2;
-
-    if (umbral_calibrado_s3 > umbral_maximo_s3) umbral_maximo_s3 = umbral_calibrado_s3;
-    if (umbral_calibrado_s3 < umbral_minimo_s3) umbral_minimo_s3 = umbral_calibrado_s3;
-  }
-
-  // Calcula los umbrales finales promedio
-  umbral_calibrado_s0 = (umbral_minimo_s0 + umbral_maximo_s0) / 2;
-  umbral_calibrado_s1 = (umbral_minimo_s1 + umbral_maximo_s1) / 2;
-  umbral_calibrado_s2 = (umbral_minimo_s2 + umbral_maximo_s2) / 2;
-  umbral_calibrado_s3 = (umbral_minimo_s3 + umbral_maximo_s3) / 2;
-
-  animacion_confirmacion();
-  Serial.println("Calibración completada");
-  Serial.println("--------------------------------------");
-  Serial.printf("S0: %d | S1: %d | S2: %d | S3: %d\n", umbral_calibrado_s0, umbral_calibrado_s1, umbral_calibrado_s2, umbral_calibrado_s3);
-  Serial.println("--------------------------------------");
+  analogWrite(IN1, 0);
+  analogWrite(IN2, velocidad / 2);
+  analogWrite(IN3, 0);
+  analogWrite(IN4, velocidad);
 }
 
-// === SETUP ===
+void izquierda_pronunciada(){
+  digitalWrite(led_blanco, HIGH);
+  digitalWrite(led_verde, HIGH);
+  digitalWrite(led_naranga , LOW);
+  digitalWrite(led_azul , LOW);   
+      
+  // Motor izquierdo (A)
+  analogWrite(IN1, velocidad);  // reversa
+  analogWrite(IN2, 0);
+
+  // Motor derecho (B)
+  analogWrite(IN3, 0);
+  analogWrite(IN4, velocidad);  // adelante
+}
+
+void detener(){
+  digitalWrite(led_naranga , HIGH);
+  digitalWrite(led_azul , HIGH);
+  digitalWrite(led_blanco , HIGH);
+  digitalWrite(led_verde , HIGH);       
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 0);
+  analogWrite(IN3, 0);
+  analogWrite(IN4, 0);
+}
+/******************/
+
 void setup() {
   Serial.begin(115200);
-  pinMode(boton, INPUT_PULLUP);
-  pinMode(led_amarillo, OUTPUT);
-  pinMode(led_verde, OUTPUT);
-
-  Serial.println("Iniciando calibración...");
-  calibracion_umbrales(5);
+  pinMode(led_naranga, OUTPUT); 
+  pinMode(led_azul, OUTPUT); 
+  pinMode(led_blanco, OUTPUT); 
+  pinMode(led_verde, OUTPUT); 
+  pinMode(umbral_manual, INPUT);
+ 
 }
 
-// === LOOP PRINCIPAL ===
 void loop() {
-  int val_s0 = analogRead(s0);
-  int val_s1 = analogRead(s1);
-  int val_s2 = analogRead(s2);
-  int val_s3 = analogRead(s3);
+  
+  valor_potenciomentro = analogRead(umbral_manual);
+  umbral=analogRead(umbral_manual);
+  valor_s0  = analogRead(s0);
+  valor_s1  = analogRead(s1);
+  valor_s2  = analogRead(s2);
+  valor_s3  = analogRead(s3);
 
-  Serial.print("S0: "); Serial.print(val_s0);
-  Serial.print(" | S1: "); Serial.print(val_s1);
-  Serial.print(" | S2: "); Serial.print(val_s2);
-  Serial.print(" | S3: "); Serial.println(val_s3);
+  /*Umbral manual del potenciometro*/
+  
+  Serial.print("umbral :");
+  Serial.println(valor_potenciomentro);
 
-  delay(300);
+  S0 = (valor_s0 > umbral) ? 1 : 0;
+  S1 = (valor_s1 > umbral) ? 1 : 0;
+  S2 = (valor_s2 > umbral) ? 1 : 0;
+  S3 = (valor_s3 > umbral) ? 1 : 0;
+
+   /*Casos por si el carrito detecta ninguna o todos  los sensores en lineas negras*/
+   if(!S0 && !S1 && !S2 && !S3) adelante();
+
+   if(!S1 && S2) izquierda();
+   
+   if(S1 && !S2) derecha();
+
+   if(!S0 && !S1 && S2 && S3) izquierda_pronunciada();   
+ 
+   if(S0 && S1 && !S2 && !S3)derecha_pronunciada();
+   
+   if(S0 && S1 && S2 && S3) detener();
+
+
+  
+  //Serial.print("Sensor :");
+  //Serial.print(valor_s0);
+
+  //Serial.print("\t Sensor :");
+  //Serial.print(valor_s1);
+
+  //Serial.print("\t Sensor :");
+  //Serial.print(valor_s2);
+
+ //Serial.print("\t Sensor :");
+  //Serial.println(valor_s3);
+  delay(100);
 }
