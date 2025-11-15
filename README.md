@@ -1,4 +1,10 @@
-# carro_seguidor_lineas
-Algoritmo de un  carro seguidor de lineas negras optimizado.
-La idea es una calibración automatica, de cuerdo a la pista de eso momento. 
+# Carrito seguidor de lineas
+- Algoritmo para un carrito seguidor de lineas, con 4 sensores y un potenciometro para calibrar el umbrar sin necesidad de estar reprogramandolo.
 
+# Autor
+- Fernando Octavio Arroyo Velasco
+
+# Información extra
+- Materia: Sistemas embebidos
+- Profesor: Jorge Enrique Wals Selvas
+- Intitución: UACM (Universidad Autonoma de la Ciudad de México)
