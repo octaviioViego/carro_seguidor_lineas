@@ -18,7 +18,7 @@
 - 4 led de colores (Azul, Naranja, Verde, Blanco)
 - Alambre negro y rojo (1 o 2 mtros)
 - 5 Dupont Jumpers 
-- 4 Resistencias de 220 OMS
+- 4 Resistencias de 330 OMS
 - Porta pilas 4xAA
 
 # Imagenes del proyecto
@@ -28,3 +28,8 @@
 ![Carrito prendido 2](img/carrito_3.jpeg)
 
 ![Carrito prendido 3](img/carrito_2.jpeg)
+
+# Diagrama del proyecto 
+
+![Carrito diagrama del proyecto](img/Diagrama_carrito.png)
+
